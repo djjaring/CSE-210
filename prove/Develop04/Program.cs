@@ -1,106 +1,251 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 
-class Program {
-    static void Main(string[] args) {
-        var scriptures = new List<Scripture> {
-            new Scripture("For God so loved the world that he gave his only Son, that whoever believes in him should not perish but have eternal life.", new ScriptureReference("John", 3, 16)),
-            new Scripture("I can do all things through Christ who strengthens me.", new ScriptureReference("Philippians", 4, 13)),
-            new Scripture("Trust in the LORD with all your heart and lean not on your own understanding.", new ScriptureReference("Proverbs", 3, 5))
+namespace MindfulnessProgram
+{
+    abstract class MindfulnessActivity
+    {
+        protected string Name { get; set; }
+        protected string Description { get; set; }
+
+        public MindfulnessActivity(string name, string description)
+        {
+            Name = name;
+            Description = description;
+        }
+
+        public void Start(int duration)
+        {
+            DisplayStartingMessage(duration);
+            Thread.Sleep(2000);
+            PerformActivity(duration);
+            DisplayEndingMessage(duration);
+        }
+
+        protected void DisplayStartingMessage(int duration)
+        {
+            Console.WriteLine($"Starting {Name} Activity");
+            Console.WriteLine(Description);
+            Console.WriteLine($"Duration: {duration} seconds");
+            Console.WriteLine("Prepare to begin...");
+            Thread.Sleep(2000);
+        }
+
+        protected void DisplayEndingMessage(int duration)
+        {
+            Console.WriteLine("Good job!");
+            Console.WriteLine($"You have completed the {Name} activity for {duration} seconds.");
+            Thread.Sleep(2000);
+        }
+
+        protected abstract void PerformActivity(int duration);
+        protected void Countdown(int seconds)
+        {
+            for (int i = seconds; i > 0; i--)
+            {
+                Console.Write(i + " ");
+                Thread.Sleep(1000);
+            }
+            Console.WriteLine();
+        }
+    }
+
+    class BreathingActivity : MindfulnessActivity 
+    {
+        public BreathingActivity() : base("Breathing", "This activity will help you relax by walking you through breathing in and out slowly. Clear your mind and focus on your breathing.")
+        {
+        }
+
+        protected override void PerformActivity(int duration)
+        {
+            int interval = 5; 
+            int elapsedTime = 0;
+
+            while (elapsedTime < duration)
+            {
+                Console.WriteLine("Breathe in...");
+                Countdown(interval);
+                elapsedTime += interval;
+
+                if (elapsedTime >= duration)
+                    break;
+
+                Console.WriteLine("Breathe out...");
+                Countdown(interval);
+                elapsedTime += interval;
+            }
+        }
+    }
+
+    class ReflectionActivity : MindfulnessActivity
+    {
+        private List<string> prompts = new List<string>
+        {
+            "Think of a time when you stood up for someone else. Closed your eyes and think.",
+            "Think of a time when you did something really difficult. Closed your eyes and think.",
+            "Think of a time when you helped someone in need. Closed your eyes and think.",
+            "Think of a time when you did something truly selfless. Closed your eyes and think."
         };
 
-        try {
-            foreach (var scripture in scriptures) {
-                MemorizeScripture(scripture);
-                Console.WriteLine("\nDo you want to continue with more scriptures? Type 'yes' to continue or 'no' to quit.");
-                if (Console.ReadLine().ToLower() != "yes") {
+        private List<string> questions = new List<string>
+        {
+            "Why was this experience meaningful to you?",
+            "Have you ever done anything like this before?",
+            "How did you get started?",
+            "How did you feel when it was complete?",
+            "What made this time different than other times when you were not as successful?",
+            "What is your favorite thing about this experience?",
+            "What could you learn from this experience that applies to other situations?",
+            "What did you learn about yourself through this experience?",
+            "How can you keep this experience in mind in the future?"
+        };
+
+        public ReflectionActivity() : base("Reflection", "This activity will help you reflect on times in your life when you have shown strength and resilience. This will help you recognize the power you have and how you can use it in other aspects of your life.")
+        {
+        }
+
+        protected override void PerformActivity(int duration)
+        {
+            Random rand = new Random();
+            string selectedPrompt = prompts[rand.Next(prompts.Count)];
+            Console.WriteLine(selectedPrompt);
+            int elapsedTime = 0;
+            int interval = 15;  
+
+            while (elapsedTime < duration)
+            {
+                string question = questions[rand.Next(questions.Count)];
+                Console.WriteLine(question);
+                Countdown(interval);
+                elapsedTime += interval;
+            }
+        }
+    }
+
+    class ListingActivity : MindfulnessActivity
+    {
+        private List<string> prompts = new List<string>
+        {
+            "Who are people that you appreciate?",
+            "What are personal strengths of yours?",
+            "Who are people that you have helped this week?",
+            "When have you felt the Holy Ghost this month?",
+            "Who are some of your personal heroes?"
+        };
+
+        public ListingActivity() : base("Listing", "This activity will help you reflect on the good things in your life by having you list as many things as you can in a certain area.")
+        {
+        }
+
+        protected override void PerformActivity(int duration)
+        {
+            Random rand = new Random();
+            string selectedPrompt = prompts[rand.Next(prompts.Count)];
+            Console.WriteLine(selectedPrompt);
+            int elapsedTime = 0;
+            int interval = 10; 
+
+            while (elapsedTime < duration)
+            {
+                Console.WriteLine("List an item:");
+                string item = Console.ReadLine();
+                Countdown(interval);
+                elapsedTime += interval;
+            }
+        }
+    }
+
+
+
+    class GratitudeActivity : MindfulnessActivity // Aditional Activities Gratitutes
+    {
+        private List<string> prompts = new List<string>
+        {
+            "What are three things you are grateful for today?",
+            "Who is someone you are thankful for and why?",
+            "What is an experience this week that you appreciate?",
+            "What is an aspect of your environment (home, nature, etc.) that you're grateful for?",
+            "What ability or skill are you most grateful for?"
+        };
+
+        public GratitudeActivity() : base("Gratitude", "This activity will help you focus on the aspects of your life that you are grateful for. It aims to enhance your overall appreciation and happiness.")
+        {
+        }
+
+        protected override void PerformActivity(int duration)
+        {
+            Random rand = new Random();
+            string selectedPrompt = prompts[rand.Next(prompts.Count)];
+            Console.WriteLine(selectedPrompt);
+            int elapsedTime = 0;
+            int interval = 10; 
+
+            while (elapsedTime < duration)
+            {
+                Console.WriteLine("Express your gratitude:");
+                string gratitudePoint = Console.ReadLine();
+                Countdown(interval);
+                elapsedTime += interval;
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            while (true)
+            {
+                Console.WriteLine("Welcome to the Mindfulness Program!");
+                Console.WriteLine("Choose an activity:");
+                Console.WriteLine("1. Breathing Activity");
+                Console.WriteLine("2. Reflection Activity");
+                Console.WriteLine("3. Listing Activity");
+                Console.WriteLine("4. Gratitude Activity");
+                Console.WriteLine("5. Exit");
+
+                string choice = Console.ReadLine();
+
+                if (choice == "5")
+                {
                     break;
                 }
+
+                Console.Write("Enter the duration in seconds: ");
+                int duration;
+                if (!int.TryParse(Console.ReadLine(), out duration))
+                {
+                    Console.WriteLine("Invalid input. Please enter a number.");
+                    continue;
+                }
+
+                MindfulnessActivity activity = null;
+
+                switch (choice)
+                {
+                    case "1":
+                        activity = new BreathingActivity();
+                        break;
+                    case "2":
+                        activity = new ReflectionActivity();
+                        break;
+                    case "3":
+                        activity = new ListingActivity();
+                        break;
+                    case "4":
+                        activity = new GratitudeActivity();
+                        break;
+                    default:
+                        Console.WriteLine("Invalid choice. Please select a valid option.");
+                        continue;
+                }
+
+                if (activity != null)
+                {
+                    activity.Start(duration);
+                }
             }
-            Console.WriteLine("\nMemorization session complete!");
-        } catch (Exception ex) {
-            Console.WriteLine("An error occurred: " + ex.Message);
         }
-    }
-
-    static void MemorizeScripture(Scripture scripture) {
-        while (!scripture.AllWordsHidden()) {
-            ClearConsoleSafely();
-            scripture.Display();
-            Console.WriteLine("\nPress Enter to hide words or type 'quit' to exit.");
-            string input = Console.ReadLine();
-            if (input.ToLower() == "quit") break;
-            scripture.HideWords();
-        }
-        Console.WriteLine("\nAll words are hidden for this scripture! Memorization complete for " + scripture.Reference);
-    }
-
-    static void ClearConsoleSafely() {
-        try {
-            if (!Console.IsOutputRedirected && !Console.IsInputRedirected && !Console.IsErrorRedirected) {
-                Console.Clear();
-            }
-        } catch (System.IO.IOException) {
-            Console.WriteLine("Unable to clear the console. Continuing without clearing.");
-        }
-    }
-}
-
-class Scripture {
-    private List<Word> Words;
-    public ScriptureReference Reference { get; }
-
-    public Scripture(string text, ScriptureReference reference) {
-        Reference = reference;
-        Words = text.Split(' ').Select(word => new Word(word)).ToList();
-    }
-
-    public void HideWords() {
-        var rnd = new Random();
-        int wordsToHide = 1 + rnd.Next(3); // Hide between 1 and 3 words at a time
-        List<Word> visibleWords = Words.Where(w => !w.IsHidden).ToList();
-
-        for (int i = 0; i < wordsToHide && visibleWords.Count > 0; i++) {
-            int index = rnd.Next(visibleWords.Count);
-            visibleWords[index].IsHidden = true;
-            visibleWords.RemoveAt(index);
-        }
-    }
-
-    public void Display() {
-        Console.WriteLine(Reference);
-        Console.WriteLine(string.Join(" ", Words.Select(w => w.IsHidden ? new string('_', w.Text.Length) : w.Text)));
-    }
-
-    public bool AllWordsHidden() {
-        return Words.All(w => w.IsHidden);
-    }
-}
-
-class ScriptureReference {
-    public string Book { get; }
-    public int Chapter { get; }
-    public int StartVerse { get; }
-    public int? EndVerse { get; } // Nullable for single verse
-
-    public ScriptureReference(string book, int chapter, int startVerse, int? endVerse = null) {
-        Book = book;
-        Chapter = chapter;
-        StartVerse = startVerse;
-        EndVerse = endVerse;
-    }
-
-    public override string ToString() {
-        return EndVerse == null ? $"{Book} {Chapter}:{StartVerse}" : $"{Book} {Chapter}:{StartVerse}-{EndVerse}";
-    }
-}
-
-class Word {
-    public string Text { get; }
-    public bool IsHidden { get; set; }
-
-    public Word(string text) {
-        Text = text;
     }
 }
